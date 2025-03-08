@@ -1,27 +1,27 @@
-'use server';
-import { getStore } from '@netlify/blobs';
-import { uploadDisabled } from 'utils';
+// components/PredictionForm.js
+import { useState } from 'react';
 
-function store() {
-    return getStore({ name: 'shapes', consistency: 'strong' });
-}
+const PredictionForm = () => {
+  const [prediction, setPrediction] = useState("");
 
-// Always be sanitizing data in real sites!
-export async function uploadShapeAction({ parameters }) {
-    if (uploadDisabled) throw new Error('Sorry, uploads are disabled');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`You predicted: ${prediction}`);
+  };
 
-    const key = parameters.name;
-    await store().setJSON(key, parameters);
-    console.log('Stored shape with parameters:', parameters, 'to key:', key);
-}
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="prediction">Your Prediction:</label>
+      <input
+        type="text"
+        id="prediction"
+        name="prediction"
+        value={prediction}
+        onChange={(e) => setPrediction(e.target.value)}
+      />
+      <button type="submit">Submit Prediction</button>
+    </form>
+  );
+};
 
-export async function listShapesAction() {
-    const data = await store().list();
-    const keys = data.blobs.map(({ key }) => key);
-    return keys;
-}
-
-export async function getShapeAction({ keyName }) {
-    const data = await store().get(keyName, { type: 'json' });
-    return data;
-}
+export default PredictionForm;
